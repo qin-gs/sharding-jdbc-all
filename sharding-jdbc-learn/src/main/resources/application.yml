@@ -1,0 +1,46 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: sharding-jdbc-learn
+  main:
+    allow-bean-definition-overriding: true
+  shardingsphere:
+    props:
+      sql:
+        show: true
+    datasource:
+      names: ds1,ds2
+      ds1:
+        type: com.zaxxer.hikari.HikariDataSource
+        driver-class-name: com.mysql.cj.jdbc.Driver
+        jdbc-url: jdbc:mysql://localhost:3306/sharding-learn-master?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=GMT
+        username: root
+        password: password
+        maxPoolSize: 100
+        minPoolSize: 5
+      ds2:
+        type: com.zaxxer.hikari.HikariDataSource
+        driver-class-name: com.mysql.cj.jdbc.Driver
+        jdbc-url: jdbc:mysql://localhost:3306/sharding-learn-slave?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=GMT
+        username: root
+        password: password
+        maxPoolSize: 100
+        minPoolSize: 5
+    sharding:
+      default-data-source-name: ds1
+      tables:
+        user_:
+          actual-data-nodes: ds1.user_$->{0..1}
+          table-strategy:
+            inline:
+              sharding-column: age
+              algorithm-expression: user_$->{age % 2}
+    masterslave:
+      name: ms
+      master-data-source-name: ds1
+      slave-data-source-names: ds2
+      load-balance-algorithm-type: round_robin
+
+
