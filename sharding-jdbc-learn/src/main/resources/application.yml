@@ -11,7 +11,7 @@ spring:
       sql:
         show: true
     datasource:
-      names: ds1,ds2
+      names: ds1
       ds1:
         type: com.zaxxer.hikari.HikariDataSource
         driver-class-name: com.mysql.cj.jdbc.Driver
@@ -31,16 +31,13 @@ spring:
     sharding:
       default-data-source-name: ds1
       tables:
-        user_:
+        user:
           actual-data-nodes: ds1.user_$->{0..1}
           table-strategy:
-            inline:
-              sharding-column: age
-              algorithm-expression: user_$->{age % 2}
-    masterslave:
-      name: ms
-      master-data-source-name: ds1
-      slave-data-source-names: ds2
-      load-balance-algorithm-type: round_robin
+#            standard:
+#              sharding-column: age
+#              precise-algorithm-class-name: com.example.config.StandardStrategy
+            hint:
+              algorithm-class-name: com.example.config.TableHint
 
 
